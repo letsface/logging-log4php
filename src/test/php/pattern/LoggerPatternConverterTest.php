@@ -19,14 +19,8 @@
  * @package    log4php
  * @subpackage pattern
  * @license    http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
- * @version    $Revision$
  * @link       http://logging.apache.org/log4php
  */
-
-/** Converter referencing non-existant superglobal variable. */
-class LoggerInvalidSuperglobalConverter extends LoggerPatternConverterSuperglobal {
-	protected $name = '_FOO';
-}
 
 /**
  * @group pattern
@@ -304,15 +298,6 @@ class LoggerPatternConverterTest extends PHPUnit_Framework_TestCase {
 		$actual = $converter->convert($this->event);
 		$expected = session_id();
 		self::assertSame($expected, $actual);
-	}
-
-	/**
-	 * @expectedException PHPUnit_Framework_Error
-	 * @expectedExceptionMessage log4php: LoggerInvalidSuperglobalConverter: Cannot find superglobal variable $_FOO
-	 */
-	public function testNonexistantSuperglobal() {
-		$converter = new LoggerInvalidSuperglobalConverter($this->info);
-		$actual = $converter->convert($this->event);
 	}
 
 	public function testFormattingTrimRight() {

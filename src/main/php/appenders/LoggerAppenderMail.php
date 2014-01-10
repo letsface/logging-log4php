@@ -33,8 +33,8 @@
  *     addresses may be specified by separating them with a comma.
  * - **from** - Email address which will be used in the From field.
  * - **subject** - Subject of the email message.
+ * - **bufferSize** - Output buffer size. Number of messages sent together.
  * 
- * @version $Revision$
  * @package log4php
  * @subpackage appenders
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
@@ -46,7 +46,7 @@ class LoggerAppenderMail extends LoggerAppender {
 	 * Email address to put in From field of the email.
 	 * @var string
 	 */
-	protected $from = null;
+	protected $from;
 
 	/** 
 	 * The subject of the email.
@@ -58,14 +58,7 @@ class LoggerAppenderMail extends LoggerAppender {
 	 * One or more comma separated email addresses to which to send the email. 
 	 * @var string
 	 */
-	protected $to = null;
-
-	/** 
-	 * Indiciates whether this appender should run in dry mode.
-	 * @deprecated
-	 * @var boolean 
-	 */
-	protected $dry = false;
+	protected $to;
 
 	/** 
 	 * Buffer which holds the email contents before it is sent. 
@@ -73,30 +66,63 @@ class LoggerAppenderMail extends LoggerAppender {
 	 */
 	protected $body = '';
 	
+	/**
+	 * Output buffer size. Number of meessages kept in buffer before sending.
+	 * @var integer
+	 */
+	protected $bufferSize;
+
+	/**
+	 * Number of messages currently in buffer.
+	 * @var string
+	 */
+	protected $bufferCount = 0;
+
 	public function append(LoggerLoggingEvent $event) {
-		if($this->layout !== null) {
-			$this->body .= $this->layout->format($event);
+		$this->body .= $this->layout->format($event);
+		$this->bufferCount += 1;
+		if(isset($this->bufferSize) && $this->bufferCount >= $this->bufferSize) {
+			$this->send();
+		}
+	}
+
+	public function activateOptions() {
+		if (empty($this->from)) {
+			$this->warn("Required parameter 'from' not set. Closing appender.");
+			$this->closed = true;
+			return;
+		}
+		if (empty($this->to)) {
+			$this->warn("Required parameter 'to' not set. Closing appender.");
+			$this->closed = true;
+			return;
 		}
 	}
 	
 	public function close() {
-		if($this->closed != true) {
-			$from = $this->from;
-			$to = $this->to;
-	
-			if(!empty($this->body) and $from !== null and $to !== null and $this->layout !== null) {
-				$subject = $this->subject;
-				if(!$this->dry) {
-					mail(
-						$to, $subject, 
-						$this->layout->getHeader() . $this->body . $this->layout->getFooter(),
-						"From: {$from}\r\n");
-				} else {
-				    echo "DRY MODE OF MAIL APP.: Send mail to: ".$to." with content: ".$this->body;
-				}
+		if(!$this->closed) {
+			if(!empty($this->body)) {
+				$this->send();
 			}
 			$this->closed = true;
 		}
+	}
+
+	protected function send() {
+		$message = $this->layout->getHeader() . $this->body . $this->layout->getFooter();
+		$contentType = $this->layout->getContentType();
+
+		$headers = "From: {$this->from}\r\n";
+		$headers .= "Content-Type: {$contentType}\r\n";
+
+		$success = mail($this->to, $this->subject, $message, $headers);
+		if ($success === false) {
+			$this->warn("Failed sending email. Please check your php.ini settings. Closing appender.");
+			$this->closed = true;
+		}
+
+		$this->bufferCount = 0;
+		$this->body = '';
 	}
 	
 	/** Sets the 'subject' parameter. */
@@ -129,8 +155,13 @@ class LoggerAppenderMail extends LoggerAppender {
 		return $this->from;
 	}
 
-	/** Enables or disables dry mode. */
-	public function setDry($dry) {
-		$this->setBoolean('dry', $dry);
+	/** Sets the 'bufferSize' parameter. */
+	public function setBufferSize($bufferSize) {
+		$this->setInteger('bufferSize', $bufferSize);
+	}
+
+	/** Returns the 'bufferSize' parameter. */
+	public function getBufferSize() {
+		return $this->bufferSize;
 	}
 }

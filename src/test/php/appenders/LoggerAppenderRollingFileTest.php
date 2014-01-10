@@ -19,7 +19,6 @@
  * @package    log4php
  * @subpackage appenders
  * @license    http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
- * @version    $Revision$
  * @link       http://logging.apache.org/log4php
  */
 
@@ -197,6 +196,7 @@ class LoggerAppenderRollingFileTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	protected function tearDown() {
+		Logger::getLogger('mycat')->removeAllAppenders();
 		@unlink(PHPUNIT_TEMP_DIR.'/TEST-rolling.txt');
 		@unlink(PHPUNIT_TEMP_DIR.'/TEST-rolling.txt.1');
 		@unlink(PHPUNIT_TEMP_DIR.'/TEST-rolling.txt.2');

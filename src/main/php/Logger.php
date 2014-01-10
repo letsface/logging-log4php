@@ -36,7 +36,6 @@ require dirname(__FILE__) . '/LoggerAutoloader.php';
  * 
  * @package    log4php
  * @license	   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
- * @version	   SVN: $Id$
  * @link	   http://logging.apache.org/log4php
  */
 class Logger {
@@ -590,7 +589,7 @@ class Logger {
 	 * Returns true if the log4php framework has been initialized.
 	 * @return boolean 
 	 */
-	private static function isInitialized() {
+	public static function isInitialized() {
 		return self::$initialized;
 	}
 }

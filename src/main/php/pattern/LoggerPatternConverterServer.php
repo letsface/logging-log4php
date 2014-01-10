@@ -27,9 +27,10 @@
  * 
  * @package log4php
  * @subpackage pattern
- * @version $Revision$
  * @since 2.3
  */
 class LoggerPatternConverterServer extends LoggerPatternConverterSuperglobal {
-	protected $name = '_SERVER';
+	protected function getSource() {
+		return $_SERVER;
+	}
 }

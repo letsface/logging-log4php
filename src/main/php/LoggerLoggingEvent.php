@@ -21,7 +21,6 @@
 /**
  * The internal representation of logging event.
  *
- * @version $Revision$
  * @package log4php
  */
 class LoggerLoggingEvent {
@@ -169,8 +168,12 @@ class LoggerLoggingEvent {
 					$className = strtolower($hop['class']);
 					if(!empty($className) and ($className == 'logger' or 
 						strtolower(get_parent_class($className)) == 'logger')) {
-						$locationInfo['line'] = $hop['line'];
-						$locationInfo['file'] = $hop['file'];
+						if (isset($hop['line'])) {
+							$locationInfo['line'] = $hop['line'];
+						}
+						if (isset($hop['file'])) {
+							$locationInfo['file'] = $hop['file'];
+						}
 						break;
 					}
 				}
@@ -192,6 +195,14 @@ class LoggerLoggingEvent {
 			$this->locationInfo = new LoggerLocationInfo($locationInfo, $this->fqcn);
 		}
 		return $this->locationInfo;
+	}
+
+	/**
+	 * Sets the event's location info. Can be used to override the default info.
+	 * @param LoggerLocationInfo $locationInfo
+	 */
+	public function setLocationInformation(LoggerLocationInfo $locationInfo) {
+		$this->locationInfo = $locationInfo;
 	}
 
 	/**

@@ -34,11 +34,12 @@
  * - **port** - Used to override the default SMTP server port. Only works on 
  *     Windows.
  *
- * @version $Revision$
  * @package log4php
  * @subpackage appenders
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  * @link http://logging.apache.org/log4php/docs/appenders/mail-event.html Appender documentation
+ * @deprecated LoggerAppenderMailEvent is deprecated and will be removed in a
+ *   future release. Please use LoggerAppenderMail instead.
  */
 class LoggerAppenderMailEvent extends LoggerAppender {
 
@@ -92,7 +93,10 @@ class LoggerAppenderMailEvent extends LoggerAppender {
 			$this->close = true;
 			return;
 		}
-		
+
+		$this->warn("LoggerAppenderMailEvent is deprecated and will be removed in a future release." . 
+			"Please use LoggerAppenderMail instead.");
+
 		$this->closed = false;
 	}
 

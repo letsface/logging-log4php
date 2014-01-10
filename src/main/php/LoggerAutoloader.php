@@ -17,10 +17,11 @@
  * 
  * @package log4php
  */
-
-if (function_exists('__autoload')) {
-	trigger_error("log4php: It looks like your code is using an __autoload() function. log4php uses spl_autoload_register() which will bypass your __autoload() function and may break autoloading.", E_USER_WARNING);
-}
+if (function_exists('__autoload'))
+	spl_autoload_register('__autoload');
+// if (function_exists('__autoload')) {
+	// trigger_error("log4php: It looks like your code is using an __autoload() function. log4php uses spl_autoload_register() which will bypass your __autoload() function and may break autoloading.", E_USER_WARNING);
+// }
 
 spl_autoload_register(array('LoggerAutoloader', 'autoload'));
 
@@ -29,7 +30,6 @@ spl_autoload_register(array('LoggerAutoloader', 'autoload'));
  * 
  * @package log4php
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
- * @version $Revision$
  */
 class LoggerAutoloader {
 	
